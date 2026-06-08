@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibraVault — Perpustakaan Digital</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Background Texture -->
+    <div class="bg-texture"></div>
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="app-wrapper">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">📚</div>
+                <div>
+                    <h1 class="logo-title">LibraVault</h1>
+                    <p class="logo-sub">Perpustakaan Digital</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-tab="koleksi">
+                    <span class="nav-icon">🗂️</span>
+                    <span>Koleksi Buku</span>
+                </button>
+                <button class="nav-btn" data-tab="pinjam-aktif">
+                    <span class="nav-icon">📖</span>
+                    <span>Pinjaman Aktif</span>
+                    <span class="nav-badge" id="badgePinjam">0</span>
+                </button>
+                <button class="nav-btn" data-tab="riwayat">
+                    <span class="nav-icon">🕘</span>
+                    <span>Riwayat</span>
+                </button>
+                <button class="nav-btn" data-tab="statistik">
+                    <span class="nav-icon">📊</span>
+                    <span>Statistik</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-stats">
+                <div class="stat-mini">
+                    <span class="stat-mini-val" id="statTotalBuku">0</span>
+                    <span class="stat-mini-label">Total Buku</span>
+                </div>
+                <div class="stat-mini">
+                    <span class="stat-mini-val" id="statDipinjam">0</span>
+                    <span class="stat-mini-label">Dipinjam</span>
+                </div>
+                <div class="stat-mini">
+                    <span class="stat-mini-val" id="statTerlambat">0</span>
+                    <span class="stat-mini-label">Terlambat</span>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                &copy; 2026 Firdaus Ziddan Azzainuri
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- =================== TAB: KOLEKSI =================== -->
+            <section class="tab-section active" id="tab-koleksi">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title">Koleksi Buku</h2>
+                        <p class="page-sub">Kelola semua koleksi buku perpustakaan</p>
+                    </div>
+                    <button class="btn-primary" id="btnTambahBuku">＋ Tambah Buku</button>
+                </div>
+
+                <!-- Search & Filter -->
+                <div class="toolbar">
+                    <div class="search-wrap">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchKoleksi" class="search-input" placeholder="Cari judul atau penulis...">
+                    </div>
+                    <select class="filter-select" id="filterStatus">
+                        <option value="semua">Semua Status</option>
+                        <option value="tersedia">Tersedia</option>
+                        <option value="dipinjam">Dipinjam</option>
+                    </select>
+                </div>
+
+                <div class="book-grid" id="bookGrid"></div>
+                <div class="empty-state hidden" id="emptyKoleksi">
+                    <div class="empty-icon">📭</div>
+                    <p>Belum ada buku dalam koleksi.</p>
+                    <span>Klik "Tambah Buku" untuk mulai.</span>
+                </div>
+            </section>
+
+            <!-- =================== TAB: PINJAMAN AKTIF =================== -->
+            <section class="tab-section" id="tab-pinjam-aktif">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title">Pinjaman Aktif</h2>
+                        <p class="page-sub">Buku yang sedang dipinjam saat ini</p>
+                    </div>
+                </div>
+                <div class="loan-list" id="loanActiveList"></div>
+                <div class="empty-state hidden" id="emptyPinjam">
+                    <div class="empty-icon">✅</div>
+                    <p>Tidak ada pinjaman aktif.</p>
+                    <span>Semua buku sudah dikembalikan!</span>
+                </div>
+            </section>
+
+            <!-- =================== TAB: RIWAYAT =================== -->
+            <section class="tab-section" id="tab-riwayat">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title">Riwayat Peminjaman</h2>
+                        <p class="page-sub">Rekam jejak semua transaksi peminjaman</p>
+                    </div>
+                </div>
+                <div class="history-table-wrap">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Judul Buku</th>
+                                <th>Peminjam</th>
+                                <th>Tgl Pinjam</th>
+                                <th>Tgl Kembali</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state hidden" id="emptyRiwayat">
+                    <div class="empty-icon">📋</div>
+                    <p>Belum ada riwayat peminjaman.</p>
+                </div>
+            </section>
+
+            <!-- =================== TAB: STATISTIK =================== -->
+            <section class="tab-section" id="tab-statistik">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title">Statistik & Analitik</h2>
+                        <p class="page-sub">Insight perpustakaan Anda</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card accent-blue">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-val" id="sTotalBuku">0</div>
+                        <div class="stat-label">Total Koleksi</div>
+                    </div>
+                    <div class="stat-card accent-amber">
+                        <div class="stat-icon">📖</div>
+                        <div class="stat-val" id="sDipinjam">0</div>
+                        <div class="stat-label">Sedang Dipinjam</div>
+                    </div>
+                    <div class="stat-card accent-green">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-val" id="sTersedia">0</div>
+                        <div class="stat-label">Tersedia</div>
+                    </div>
+                    <div class="stat-card accent-red">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-val" id="sTerlambat">0</div>
+                        <div class="stat-label">Terlambat Kembali</div>
+                    </div>
+                </div>
+
+                <div class="ranking-section">
+                    <h3 class="section-title">🏆 Buku Paling Banyak Dipinjam</h3>
+                    <div id="topBooksRanking" class="ranking-list"></div>
+                    <div class="empty-state hidden" id="emptyRanking">
+                        <div class="empty-icon">🏅</div>
+                        <p>Belum ada data peminjaman.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- =================== MODAL: TAMBAH BUKU =================== -->
+    <div class="modal-overlay hidden" id="modalTambahBuku">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTambahTitle">Tambah Buku Baru</h3>
+                <button class="modal-close" id="closeTambahBuku">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Judul Buku <span class="required">*</span></label>
+                    <input type="text" id="fJudul" class="form-input" placeholder="Masukkan judul buku...">
+                </div>
+                <div class="form-group">
+                    <label>Penulis <span class="required">*</span></label>
+                    <input type="text" id="fPenulis" class="form-input" placeholder="Nama penulis...">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tahun Terbit <span class="required">*</span></label>
+                        <input type="number" id="fTahun" class="form-input" placeholder="2024" min="1900" max="2099">
+                    </div>
+                    <div class="form-group">
+                        <label>Jumlah Stok</label>
+                        <input type="number" id="fStok" class="form-input" placeholder="1" min="1" value="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Genre / Kategori</label>
+                    <select id="fGenre" class="form-input">
+                        <option value="Umum">Umum</option>
+                        <option value="Fiksi">Fiksi</option>
+                        <option value="Non-Fiksi">Non-Fiksi</option>
+                        <option value="Sains & Teknologi">Sains & Teknologi</option>
+                        <option value="Sejarah">Sejarah</option>
+                        <option value="Filsafat">Filsafat</option>
+                        <option value="Agama">Agama</option>
+                        <option value="Pendidikan">Pendidikan</option>
+                        <option value="Sastra">Sastra</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-ghost" id="cancelTambahBuku">Batal</button>
+                <button class="btn-primary" id="saveBuku">Simpan Buku</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================== MODAL: PINJAM BUKU =================== -->
+    <div class="modal-overlay hidden" id="modalPinjam">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Pinjam Buku</h3>
+                <button class="modal-close" id="closePinjam">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="buku-pinjam-info" id="infoBukuPinjam"></div>
+                <div class="form-group">
+                    <label>Nama Peminjam <span class="required">*</span></label>
+                    <input type="text" id="fPeminjam" class="form-input" placeholder="Nama lengkap peminjam...">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tanggal Pinjam</label>
+                        <input type="date" id="fTglPinjam" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Kembali <span class="required">*</span></label>
+                        <input type="date" id="fTglKembali" class="form-input">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-ghost" id="cancelPinjam">Batal</button>
+                <button class="btn-primary" id="savePinjam">Konfirmasi Pinjam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================== MODAL: KONFIRMASI HAPUS =================== -->
+    <div class="modal-overlay hidden" id="modalHapus">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h3>Hapus Buku</h3>
+                <button class="modal-close" id="closeHapus">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="confirm-text">Apakah Anda yakin ingin menghapus buku <strong id="hapusJudul"></strong>? Tindakan ini tidak dapat dibatalkan.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-ghost" id="cancelHapus">Batal</button>
+                <button class="btn-danger" id="confirmHapus">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
